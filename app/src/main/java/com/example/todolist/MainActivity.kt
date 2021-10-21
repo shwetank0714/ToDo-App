@@ -3,6 +3,7 @@ package com.example.todolist
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
+import androidx.core.view.iterator
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         val myTask = findViewById<EditText>(R.id.editView)
         val createTask = findViewById<Button>(R.id.buttonId)
         val myList = findViewById<ListView>(R.id.lv)
+        val removeButton = findViewById<Button>(R.id.removebtn)
 
         // Adding the task on clicking Create Button
         createTask.setOnClickListener {
@@ -28,23 +30,34 @@ class MainActivity : AppCompatActivity() {
             }
             else{
                 listItems.add(myTask.text.toString())
-                arrayAdapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,listItems)
+                arrayAdapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_multiple_choice,listItems)
                 myList.adapter = arrayAdapter
+                myList.choiceMode = ListView.CHOICE_MODE_MULTIPLE
                 myTask.text.clear()
             }
         }
 
-        // Clicking the task on the listView the task gets deleted.
-        myList.setOnItemClickListener { _, _, position, _ ->
-            val deleteItem = arrayAdapter.getItem(position)
-            arrayAdapter.remove(deleteItem)
+        /*---------------------------------------------- PROBLEM FACED BELOW ----------------------------------*/
+        // Facing problem in figuring out the method for
+        // removing the checked items when click the remove button
+        removeButton.setOnClickListener {
+
+            val sparseArray = myList.checkedItemPositions
+            val getCount = sparseArray.size()
+
+            for (i in -1..getCount+1){
+                if(sparseArray[i]){
+                   arrayAdapter.remove(listItems[i])
+                    arrayAdapter.notifyDataSetChanged()
+                }
+            }
         }
-
-
+        /*--------------------------------------------------------------------------------------------------------*/
     }
 
     
 }
+
 
 
 
